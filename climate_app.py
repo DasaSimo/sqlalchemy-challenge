@@ -96,23 +96,25 @@ def tobs():
     # going back one year
     q_date = max_d  - dt.timedelta(days=365)
 
-    #first row with date used only for the output data as a dictionary (date as a key, tobs as values)
-    #station_temp = session.query(Msrmnts.tobs,Msrmnts.date).\ 
-    station_temp = session.query(Msrmnts.tobs).\
-                     filter(Msrmnts.date > q_date).\
-                     filter(Msrmnts.station =='USC00519281').\
-                     order_by(Msrmnts.date).all()
+    
+    station_temp = session.query(Msrmnts.date,Msrmnts.tobs).\
+                        filter(Msrmnts.date > q_date).\
+                        filter(Msrmnts.station =='USC00519281').\
+                        order_by(Msrmnts.date).all()
     session.close()
    # list of temperature observation for the station for the previous year
-    TOBS = list(np.ravel(station_temp))
+   # TOBS = list(np.ravel(station_temp))
+   # return jsonify(TOBS)
+
+    TOBS = []
+    for date, tobs in station_temp:
+        tobs_dict = {}
+        tobs_dict["date"] = date
+        tobs_dict["tobs"] = tobs
+              
+        TOBS.append(tobs_dict)
+   
     return jsonify(TOBS)
-
-   # getting output data
-   # tobs_dict = {}
-   # for tobs, date in station_temp:
-   #     tobs_dict[date] = tobs
-   #return jsonify(tobs_dict)
-
 
 
 if __name__ == '__main__':
