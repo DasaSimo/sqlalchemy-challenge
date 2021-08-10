@@ -70,7 +70,7 @@ def stations():
     results = session.query(Station.station,Station.name,Station.latitude, Station.longitude, Station.elevation).all()
     session.close()
     
-    # preparing outout data
+    # preparing output data 
     all_stations = []
     for station,name, latitude, longitude, elevation in results:
         station_dict = {}
@@ -85,6 +85,35 @@ def stations():
     return jsonify(all_stations)    
 
 
+
+
+@app.route("/api/v1.0/tobs")
+def tobs():
+    # getting data for one year for the most active station 
+    session = Session(engine) 
+    d1 =  session.query(func.max(Msrmnts.date)).filter(Msrmnts.station =='USC00519281').first()
+    max_d = dt.datetime.strptime(d1[0], "%Y-%m-%d")
+    # going back one year
+    q_date = max_d  - dt.timedelta(days=365)
+
+    #first row with date used only for the output data as a dictionary (date as a key, tobs as values)
+    #station_temp = session.query(Msrmnts.tobs,Msrmnts.date).\ 
+    station_temp = session.query(Msrmnts.tobs).\
+                     filter(Msrmnts.date > q_date).\
+                     filter(Msrmnts.station =='USC00519281').\
+                     order_by(Msrmnts.date).all()
+    session.close()
+   # list of temperature observation for the station for the previous year
+    TOBS = list(np.ravel(station_temp))
+    return jsonify(TOBS)
+
+   # getting output data
+   # tobs_dict = {}
+   # for tobs, date in station_temp:
+   #     tobs_dict[date] = tobs
+   #return jsonify(tobs_dict)
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-
