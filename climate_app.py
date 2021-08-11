@@ -137,5 +137,23 @@ def start_date(start):
     return jsonify(temp) 
 
 
+# temperature statistics data when given the start date and the end date
+@app.route("/api/v1.0/<start>/<end>")
+def start_end_date(start, end):
+    session = Session(engine) 
+    results =  session.query(func.min(Msrmnts.tobs), func.avg(Msrmnts.tobs), func.max(Msrmnts.tobs)).\
+        filter(Msrmnts.date >= start).filter(Msrmnts.date <= end).all()
+    
+    temp = []
+    for min_temp, avg_temp, max_temp in results:
+        start_temp = {}
+        start_temp["TMIN"] = min_temp
+        start_temp["TAVG"] = avg_temp
+        start_temp["TMAX"] = max_temp
+              
+        temp.append(start_temp)
+
+    return jsonify(temp)  
+
 if __name__ == '__main__':
     app.run(debug=True)
