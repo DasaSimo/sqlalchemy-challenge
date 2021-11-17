@@ -84,5 +84,7 @@ For station analysis following queries were made:
 * The daily normals for the duration of the trip were calculating as a next step. Normals are the averages for the min, avg, and max temperatures. 
 * Pandas was used to plot an area plot (`stacked=False`) for the daily normals.
 
+![image](https://user-images.githubusercontent.com/84484371/142088989-4665e73d-0d5d-460f-94c8-cda189d42c44.png)
+
  
 
